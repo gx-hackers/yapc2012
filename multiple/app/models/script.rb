@@ -113,7 +113,7 @@ class Script < ActiveRecord::Base
   end
 
   def self.run_python(file_path)
-    return self::parse_command("python #{Rails.root}/benchmark_scripts/benchmark.py #{file_path}")
+    return self::parse_command("python -S #{Rails.root}/benchmark_scripts/benchmark.py #{file_path}")
   end
 
   def self.run_js(file_path)
