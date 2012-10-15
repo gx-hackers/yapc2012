@@ -10,172 +10,143 @@ def ffs(n)
   if n > 256 then
     if n > 2048 then
       if n > 8192 then
-        if n == 16384 then
-          14
-        else
-          15
-        end
+        15
       else
-        if n == 8192 then
-          13
-        else
-          12
-        end
+        13
       end
     else
       if n > 1024 then
         11
       else
-        if n == 1024 then
-          10
-        else
-          9
-        end
+        9
       end
     end
   else
     if n > 16
       if n > 64
-        if n == 128 then
-          7
-        else
-          8
-        end
+        7
       else
-        if n == 64 then
-          6
-        else
-          5
-        end
+        5
       end
     else
       if n > 4
-        if n == 16 then
-          4
-        else
-          3
-        end
+        3
       else
-        if n == 4 then
-          2
-        else
-          if n == 2 then
-            1
-          else
-            0
-          end
-        end
+        1
       end
     end
   end
 end
 
-def main
-  flg = Array.new(FLAGS_NUM, 0b0101010101010101)
+def init
+  flg = [0b1101011101111101, 
+         0b101111101110101, 
+         0b111010111011111, 
+         0b1101011111011101, 
+         0b101110101110111, 
+         0b1111010111110111, 
+         0b1101011101011101, 
+         0b111110101111101, 
+         0b111010111010111, 
+         0b1101111101011111, 
+         0b1101110101110101, 
+         0b111011111010111, 
+         0b1111011101011101, 
+         0b101110111110101, 
+         0b111110111010111] * ((FLAGS_NUM / 15) + 1)
+  
   flg[0] |= 7
+  flg
+end
+
+def main
+  cn = 0
+  stp1 = 0
+  stp2 = 0
+  stp3 = 0
+  flg = init
   pno = 3
   add = 2 + 3 + 5
-  i = 0
-  while i < FLAGS_NUM
-    flg[i] |= 0b1001001001001001
-    flg[i + 1] |= 0b0100100100100100
-    flg[i + 2] |= 0b0010010010010010
-    i = i + 3
-  end
 
-  i = 0
-  while i < FLAGS_NUM
-    flg[i] |= 0b1000010000100001
-    flg[i + 1] |= 0b0100001000010000
-    flg[i + 2] |= 0b0010000100001000
-    flg[i + 3] |= 0b0001000010000100
-    flg[i + 4] |= 0b0000100001000010
-    i = i + 5
-  end
-  
-  curnum = 0
-  while !(pno == PNUM)
-    while !((lf = flg[curnum]) == 0xffff)
-      off = ffs(~lf) 
-      lcn = (curnum << 4 ) + off
-      flg[curnum] |= (1 << off)
+  base = 0
+  lcn = 0
+  while lcn < 318
+    while (lf = flg[base]) < 0xffff
+      lcn = (base << 4 ) + ffs(~lf)
+      flg[base] |= (1 + lf)
 
-      if lcn < 320 then
-        cn = lcn * lcn
-        stp1 = lcn * 2
-        while cn < MAXNUM
-          if cn % 15 == 0 then
-            while cn < MAXNUM
-              # 0
-              cn += stp1 
-
-              # 1
-              flg[cn >> 4] |= 1 << (cn & 0xf)
-              cn += stp1 
-
-              # 2
-              flg[cn >> 4] |= 1 << (cn & 0xf)
-              cn += stp1 
-
-              # 3
-              cn += stp1 
-
-              # 4
-              flg[cn >> 4] |= 1 << (cn & 0xf)
-              cn += stp1 
-
-              # 5
-              cn += stp1 
-
-              # 6
-              cn += stp1 
-
-              # 7
-              flg[cn >> 4] |= 1 << (cn & 0xf)
-              cn += stp1 
-
-              # 8
-              flg[cn >> 4] |= 1 << (cn & 0xf)
-              cn += stp1 
-
-              # 9
-              cn += stp1 
-
-              # 10
-              cn += stp1 
-
-              # 11
-              flg[cn >> 4] |= 1 << (cn & 0xf)
-              cn += stp1 
-
-              # 12
-              cn += stp1 
-
-              # 13
-              flg[cn >> 4] |= 1 << (cn & 0xf)
-              cn += stp1 
-
-              # 14
-              flg[cn >> 4] |= 1 << (cn & 0xf)
-              cn += stp1 
-            end
-          else
+      cn = lcn * lcn
+      stp1 = lcn * 2
+      while cn < MAXNUM
+        if cn % 15 == 0 then
+          stp2 = lcn * 4
+          stp3 = lcn * 6
+          while cn < MAXNUM
+            # 0
+            cn += stp1 
+            
+            # 1
+            flg[cn >> 4] |= 1 << (cn & 0xf)
+            cn += stp1 
+            
+            # 2
+            flg[cn >> 4] |= 1 << (cn & 0xf)
+            # 3
+            cn += stp2 
+            
+            # 4
+            flg[cn >> 4] |= 1 << (cn & 0xf)
+            # 5
+            # 6
+            cn += stp3
+            
+            # 7
+            flg[cn >> 4] |= 1 << (cn & 0xf)
+            cn += stp1 
+            
+            # 8
+            flg[cn >> 4] |= 1 << (cn & 0xf)
+            # 9
+            # 10
+            cn += stp3
+            
+            # 11
+            flg[cn >> 4] |= 1 << (cn & 0xf)
+            # 12
+            cn += stp2
+            
+            # 13
+            flg[cn >> 4] |= 1 << (cn & 0xf)
+            cn += stp1 
+            
+            # 14
             flg[cn >> 4] |= 1 << (cn & 0xf)
             cn += stp1 
           end
+        else
+          flg[cn >> 4] |= 1 << (cn & 0xf)
+          cn += stp1 
         end
       end
-      
+
       add += lcn
       pno += 1
     end
-    
-    curnum += 1
+    base += 1
+  end
+
+  while pno < PNUM
+    lf = flg[base]
+    while lf < 0xffff
+      add += (base << 4 ) + ffs(~lf) 
+      lf |= (1 + lf)
+      pno += 1
+    end
+    base += 1
   end
   
   p add
 end
-    
-main
 
+main
 
